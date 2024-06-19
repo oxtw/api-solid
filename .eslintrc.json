@@ -4,6 +4,7 @@
         "plugin:prettier/recommended"
     ],
     "rules":{
+        "camelcase":"off",
         "prettier/prettier":[
                 "error",
                 {
