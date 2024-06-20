@@ -10,29 +10,35 @@ interface RegisterUseCaseRequest {
   password: string;
 }
 
-export async function registerUseCase({
-  name,
-  email,
-  password,
-}: RegisterUseCaseRequest) {
-  const password_hash = await hash(password, 6);
-  const userWithSameEmail = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
+// SOLID - Uncle Bob (Clean Code)
 
-  if (userWithSameEmail) {
-    throw new Error("E-mail already exists");
+// D - Dependency Inversion Principle
 
-    // return reply.status(409).send(); //HTTP
+export class RegisterUseCase {
+  constructor(private usersRepository: any) {
+    // inversão de dependências
   }
 
-  const prismaUsersRepository = new PrismaUsersRepository();
+  async execute({ name, email, password }: RegisterUseCaseRequest) {
+    const password_hash = await hash(password, 6);
+    const userWithSameEmail = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
-  await prismaUsersRepository.create({
-    name,
-    email,
-    password_hash,
-  });
+    if (userWithSameEmail) {
+      throw new Error("E-mail already exists");
+
+      // return reply.status(409).send(); //HTTP
+    }
+
+    // const prismaUsersRepository = new PrismaUsersRepository();
+
+    await this.usersRepository.create({
+      name,
+      email,
+      password_hash,
+    });
+  }
 }
